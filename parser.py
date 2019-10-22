@@ -3,7 +3,7 @@ from lex import *
 
 prods = {
     'Programa':[
-        ['ListaDecl', '"EOF"']
+        ['ListaDecl', 'EOF']
     ],
 
     'ListaDecl':[
@@ -153,7 +153,7 @@ prods = {
 
 }
 
-noTerminales = ['Programa',
+no_Terminales = ['Programa',
                 'ListaDecl',
                 'Declaracion',
                 'FunDecl',
@@ -183,58 +183,59 @@ noTerminales = ['Programa',
                 'Primitivo'
 ]
 
+
+def es_Terminal(simbolo):
+    return not es_No_Terminal(simbolo)
+    
+
+def es_No_Terminal(simbolo):
+    return simbolo in no_Terminales
+
 def parser(tokens):
     
-    self={
+    self = {
         'tokens': tokens,
         'index': 0,
         'error': False,
         }
 
-
     def parse():
-        error = False
-        index = 0
         pni('Programa')
+        token_actual = self['tokens'][self['index']]
         
-        if not error == True and tokens(index) == "#":
-            return True
-        else:
+        if self['error'] or token_actual != 'EOF':
             return False
+        
+        return True
+
     
 
     def procesar(parteDerecha):
 
         for simbolo in parteDerecha:
-            if esTerminal(simbolo):
-                if simbolo == tokens[index]:
-                    index+=1
+            token_actual = self['tokens'][self['index']]
+            self['error'] = False
+            if es_Terminal(simbolo):
+                if simbolo == token_actual:
+                    self['index'] += 1
                 else:
-                    error = True
+                    self['error'] = True
                     break
 
-            if esNoTerminal(simbolo):
+            elif es_No_Terminal(simbolo):
                 pni(simbolo)
-                if error == True:
-                    break
 
 
     def pni(noTerminal):
 
         for parteDerecha in prods[noTerminal]:
-            error = False
-            index_aux = index
+            index_aux = self['index'] #Es para que retroceda
             procesar(parteDerecha)
-            if error == False:
-                break
+            if self['error'] == True:
+                self['index'] == index_aux
             else:
-                index = index_aux
-
-    parse()
+                break
 
 
-def esTerminal(simbolo):
-    return True
+    return parse()
 
-def esNoTerminal(simbolo):
-    return True
