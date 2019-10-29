@@ -36,11 +36,11 @@ prods = {
     ],
 
     'Parametros':[
-        ['ID', 'Par']
+        ['ID', 'Param']
     ],
 
-    'Par':[
-        ['COMA', 'ID', 'Par'],
+    'Param':[
+        ['COMA', 'ID', 'Param'],
         []
     ],
 
@@ -165,11 +165,13 @@ prods = {
 
 no_Terminales = ['Programa',
                 'ListaDecl',
+                'ListaDecl2', # Agregado por eliminacion de recursividad izq
                 'Declaracion',
                 'FunDecl',
                 'Funcion',
                 'ListaParametros',
                 'Parametros',
+                'Param', # Agregado por eliminacion de recursividad izq
                 'VarDecl',
                 'Sentencia',
                 'ExprSent',
@@ -226,7 +228,7 @@ def parser(cadena):
             print('simbolo a evaluar:', simbolo, 'con', token_actual)
             if es_Terminal(simbolo):
                 print(simbolo, 'es terminal')
-                if simbolo == token_actual:
+                if simbolo == token_actual[0]:
                     print(("avanzo", simbolo, self))
                     self['index'] += 1
                 else:
