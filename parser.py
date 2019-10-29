@@ -1,13 +1,18 @@
 from automatas import *
 from lex import *
 
+
 prods = {
     'Programa':[
         ['ListaDecl', 'EOF']
     ],
 
     'ListaDecl':[
-        ['ListaDecl', 'Declaracion'],
+        ['Declaracion', 'ListaDecl2']
+    ],
+
+    'ListaDecl2':[
+        ['Declaracion', 'ListaDecl2'],
         []
     ],
 
@@ -26,13 +31,17 @@ prods = {
     ],
 
     'ListaParametros':[
-        [],
-        ['Parametros']
+        ['Parametros'],
+        []
     ],
 
     'Parametros':[
-        ['ID'],
-        ['Parametros', 'COMA', 'ID']
+        ['ID', 'Par']
+    ],
+
+    'Par':[
+        ['COMA', 'ID', 'Par'],
+        []
     ],
 
     'VarDecl':[
@@ -73,8 +82,8 @@ prods = {
     ],
 
     'AdicArg':[
-        [],
-        ['Expresion']
+        ['Expresion'],
+        []
     ],
 
     'IfSent':[
@@ -153,6 +162,7 @@ prods = {
 
 }
 
+
 no_Terminales = ['Programa',
                 'ListaDecl',
                 'Declaracion',
@@ -191,51 +201,72 @@ def es_Terminal(simbolo):
 def es_No_Terminal(simbolo):
     return simbolo in no_Terminales
 
-def parser(tokens):
+def parser(cadena):
     
     self = {
-        'tokens': tokens,
+        'tokens': lex(cadena),
         'index': 0,
-        'error': False,
+        'error': False
         }
 
     def parse():
         pni('Programa')
         token_actual = self['tokens'][self['index']]
-        
         if self['error'] or token_actual != 'EOF':
+            print('Cadena no aceptada')
             return False
         
+        print('Cadena aceptada')
         return True
 
-    
-
     def procesar(parteDerecha):
-
         for simbolo in parteDerecha:
             token_actual = self['tokens'][self['index']]
             self['error'] = False
+            print('simbolo a evaluar:', simbolo, 'con', token_actual)
             if es_Terminal(simbolo):
+                print(simbolo, 'es terminal')
                 if simbolo == token_actual:
+                    print(("avanzo", simbolo, self))
                     self['index'] += 1
                 else:
                     self['error'] = True
                     break
-
             elif es_No_Terminal(simbolo):
+                print(simbolo, 'no es terminal')
                 pni(simbolo)
-
+                if self['error']:
+                    break
 
     def pni(noTerminal):
-
         for parteDerecha in prods[noTerminal]:
-            index_aux = self['index'] #Es para que retroceda
+            print(parteDerecha)
+            index_aux = self['index'] #Pivote de retroceso
             procesar(parteDerecha)
             if self['error'] == True:
+                print('BackTracking')
                 self['index'] == index_aux
             else:
                 break
 
 
     return parse()
+
+
+cases = [
+    (True, "fun id ( ) { } eof")
+]
+
+
+def test(cadena):
+    print('input:', cadena)
+    print(lex(cadena))
+    respuesta = parser(cadena)
+    return respuesta
+
+for (x, prueba) in enumerate(cases):
+    print('\ntest', x)
+    expected, case = prueba
+    assert expected == test(case)
+
 

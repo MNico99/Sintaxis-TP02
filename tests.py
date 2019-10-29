@@ -1,4 +1,5 @@
 from lex import *
+from parser import *
 
 casosLexer = [
     (
@@ -79,3 +80,4 @@ casosLexer = [
 
 for cadena, resultado in casosLexer:
     assert lex(cadena) == resultado
+
