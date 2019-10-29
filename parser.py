@@ -151,7 +151,7 @@ prods = {
         ['Primitivo']
     ],
 
-    'Primitvo':[
+    'Primitivo':[
         ['TRUE'],
         ['FALSE'],
         ['Numero'],
@@ -225,17 +225,17 @@ def parser(cadena):
         for simbolo in parteDerecha:
             token_actual = self['tokens'][self['index']]
             self['error'] = False
-            print('simbolo a evaluar:', simbolo, 'con', token_actual)
+            print('en procesar simbolo a evaluar:', simbolo, 'con', token_actual)
             if es_Terminal(simbolo):
-                print(simbolo, 'es terminal')
+                print('en procesar', simbolo, 'es terminal')
                 if simbolo == token_actual[0]:
-                    print(("avanzo", simbolo, self))
+                    print(("avanzo con", simbolo, self))
                     self['index'] += 1
                 else:
                     self['error'] = True
                     break
             elif es_No_Terminal(simbolo):
-                print(simbolo, 'no es terminal')
+                print('en procesar', simbolo, 'no es terminal')
                 pni(simbolo)
                 if self['error']:
                     break
@@ -246,7 +246,7 @@ def parser(cadena):
             index_aux = self['index'] #Pivote de retroceso
             procesar(parteDerecha)
             if self['error'] == True:
-                print('BackTracking')
+                print('en pni Error entonces hace BackTracking')
                 self['index'] == index_aux
             else:
                 break
@@ -256,7 +256,7 @@ def parser(cadena):
 
 
 cases = [
-    (True, "fun id ( ) { } eof")
+    (True, "fun id ( id ) { id } eof")
 ]
 
 
