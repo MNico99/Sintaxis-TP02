@@ -218,8 +218,8 @@ casosLlaveAbierta = [
     ("}", RESULTADO_TRAMPA),
 ]
 
-#for cadena, resultado in casosCorcheteAbierto:
-#    assert A_CorcheteAbierto(cadena) == resultado
+for cadena, resultado in casosLlaveAbierta:
+    assert A_LlaveAbierta(cadena) == resultado
 
 #################################################################
 
@@ -252,8 +252,8 @@ casosLlaveCerrada = [
     ("{", RESULTADO_TRAMPA),
 ]
 
-#for cadena, resultado in casosCorcheteCerrado:
-#    assert A_CorcheteCerrado(cadena) == resultado
+for cadena, resultado in casosLlaveCerrada:
+    assert A_LlaveCerrada(cadena) == resultado
 
 #################################################################
 
@@ -893,6 +893,15 @@ def A_ParenClose(cadena):
         return RESULTADO_ACEPTADO
     else:
         return RESULTADO_NO_ACEPTADO
+
+casosParenClose = [
+    (")", RESULTADO_ACEPTADO),
+    ("()", RESULTADO_TRAMPA),
+]
+
+for cadena, resultado in casosParenClose:
+    assert A_ParenClose(cadena) == resultado
+
 
 #################################################################
 

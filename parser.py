@@ -225,10 +225,10 @@ def parser(cadena):
         for simbolo in parteDerecha:
             token_actual = self['tokens'][self['index']]
             self['error'] = False
-            print('en procesar simbolo a evaluar:', simbolo, 'con', token_actual)
+            print('en procesar simbolo a evaluar:', simbolo, 'con', token_actual[0])
             if es_Terminal(simbolo):
                 print('en procesar', simbolo, 'es terminal')
-                if simbolo == token_actual[0]:
+                if simbolo == token_actual[0]: # si simbolo es igual al primer elemento de la tupla token_actual
                     print(("avanzo con", simbolo, self))
                     self['index'] += 1
                 else:
@@ -242,7 +242,7 @@ def parser(cadena):
 
     def pni(noTerminal):
         for parteDerecha in prods[noTerminal]:
-            print(parteDerecha)
+            print("en pni entra", parteDerecha)
             index_aux = self['index'] #Pivote de retroceso
             procesar(parteDerecha)
             if self['error'] == True:
