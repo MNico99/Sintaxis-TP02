@@ -8,12 +8,12 @@ prods = {
     ],
 
     'ListaDecl':[
-        ['Declaracion', 'ListaDecl2']
+        ['Declaracion', 'ListaDecl2'],
+        []
     ],
 
     'ListaDecl2':[
-        ['Declaracion', 'ListaDecl2'],
-        []
+        ['Declaracion', 'ListaDecl2']
     ],
 
     'Declaracion':[
@@ -214,28 +214,34 @@ def parser(cadena):
     def parse():
         pni('Programa')
         token_actual = self['tokens'][self['index']]
-        if self['error'] or token_actual != 'EOF':
+        print('tiene que comparar', token_actual[0], 'EOF',self['error'])
+        if self['error'] or token_actual[0]!='EOF':
             print('Cadena no aceptada')
             return False
-        
-        print('Cadena aceptada')
-        return True
+        else:
+            print('Cadena aceptada')
+            return True
 
     def procesar(parteDerecha):
+        if parteDerecha == '':
+            self['index'] += 1
+            return
         for simbolo in parteDerecha:
             token_actual = self['tokens'][self['index']]
+            print("token actual", token_actual)
             self['error'] = False
             print('en procesar simbolo a evaluar:', simbolo, 'con', token_actual[0])
             if es_Terminal(simbolo):
                 print('en procesar', simbolo, 'es terminal')
-                if simbolo == token_actual[0]: # si simbolo es igual al primer elemento de la tupla token_actual
+                if simbolo == token_actual[self['index']]: # si simbolo es igual al primer elemento de la tupla token_actual
                     print(("avanzo con", simbolo, self))
                     self['index'] += 1
+                    print("el indice vale", self['index'])
                 else:
                     self['error'] = True
                     break
             elif es_No_Terminal(simbolo):
-                print('en procesar', simbolo, 'no es terminal')
+                print('en procesar', simbolo, 'es un no terminal')
                 pni(simbolo)
                 if self['error']:
                     break
@@ -256,19 +262,14 @@ def parser(cadena):
 
 
 cases = [
-    (True, "fun id ( id ) { id } eof")
+    ('', True),
+    #('if(id) id ;', True),
+    #('var id;', True),
+    #('var id = True ;', True)
 ]
 
 
-def test(cadena):
-    print('input:', cadena)
-    print(lex(cadena))
-    respuesta = parser(cadena)
-    return respuesta
-
-for (x, prueba) in enumerate(cases):
-    print('\ntest', x)
-    expected, case = prueba
-    assert expected == test(case)
+for cadena, resultado in cases:
+    assert parser(cadena) == resultado
 
 

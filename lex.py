@@ -88,7 +88,8 @@ def lex(cadena):
         else:
             tipoDeToken = candidatos[0]
             tokens.append((tipoDeToken, lexeme))
-
+    
+    tokens.append(('EOF', 'EOF'))
     return tokens
 
 
