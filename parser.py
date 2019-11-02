@@ -8,12 +8,8 @@ prods = {
     ],
 
     'ListaDecl':[
-        ['Declaracion', 'ListaDecl2'],
+        ['Declaracion', 'ListaDecl'],
         []
-    ],
-
-    'ListaDecl2':[
-        ['Declaracion', 'ListaDecl2']
     ],
 
     'Declaracion':[
@@ -165,7 +161,6 @@ prods = {
 
 no_Terminales = ['Programa',
                 'ListaDecl',
-                'ListaDecl2', # Agregado por eliminacion de recursividad izq
                 'Declaracion',
                 'FunDecl',
                 'Funcion',
@@ -215,7 +210,7 @@ def parser(cadena):
         pni('Programa')
         token_actual = self['tokens'][self['index']]
         print('tiene que comparar', token_actual[0], 'EOF',self['error'])
-        if self['error'] or token_actual[0]!='EOF':
+        if self['error'] and token_actual[0]!='EOF':
             print('Cadena no aceptada')
             return False
         else:
@@ -264,7 +259,7 @@ def parser(cadena):
 cases = [
     ('', True),
     #('if(id) id ;', True),
-    #('var id;', True),
+    ('var id;', True),
     #('var id = True ;', True)
 ]
 
