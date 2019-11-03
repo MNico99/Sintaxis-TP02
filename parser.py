@@ -4,12 +4,18 @@ from lex import *
 
 prods = {
     'Programa':[
-        ['ListaDecl', 'EOF']
+        ['ListaDecl', 'EOF'],
+        ['EOF']
     ],
 
     'ListaDecl':[
-        ['Declaracion', 'ListaDecl'],
-        []
+        ['Declaracion'],
+        ['ListaDecl2', 'Declaracion']
+    ],
+
+    'ListaDecl2':[
+        ['Declaracion', 'ListaDecl2'],
+        ['Declaracion']
     ],
 
     'Declaracion':[
@@ -23,21 +29,21 @@ prods = {
     ],
 
     'Funcion':[
-        ['ID', 'PAREN_OPEN', 'ListaParametros', 'PAREN_CLOSE', 'Bloque']
+        ['ID', 'PAREN_OPEN', 'ListaParametros', 'PAREN_CLOSE', 'Bloque'],
+        ['ID', 'PAREN_OPEN', 'PAREN_CLOSE', 'Bloque']
     ],
 
     'ListaParametros':[
-        ['Parametros'],
-        []
+        ['Parametros']
     ],
 
     'Parametros':[
-        ['ID', 'Param']
+        ['ID', 'Param'],
+        ['ID']
     ],
 
     'Param':[
-        ['COMA', 'ID', 'Param'],
-        []
+        ['COMA', 'ID', 'Param']
     ],
 
     'VarDecl':[
@@ -64,11 +70,12 @@ prods = {
 
     'Asignacion':[
         ['ID', 'IGUAL', 'Primitivo'],
-        ['OLogico', 'PUNTOCOMA'],
+        ['OLogico', 'PUNTOCOMA']
     ],
 
     'ForSent':[
-        ['FOR', 'PAREN_OPEN', 'PriArg', 'AdicArg', 'PUNTOCOMA', 'AdicArg', 'PAREN_CLOSE', 'Sentencia']
+        ['FOR', 'PAREN_OPEN', 'PriArg', 'AdicArg', 'PUNTOCOMA', 'AdicArg', 'PAREN_CLOSE', 'Sentencia'],
+        ['FOR', 'PAREN_OPEN', 'PriArg', 'PUNTOCOMA', 'PAREN_CLOSE', 'Sentencia']
     ],
 
     'PriArg':[
@@ -78,8 +85,7 @@ prods = {
     ],
 
     'AdicArg':[
-        ['Expresion'],
-        []
+        ['Expresion']
     ],
 
     'IfSent':[
@@ -97,7 +103,8 @@ prods = {
     ],
 
     'Bloque':[
-        ['LLAVE_ABIERTA', 'ListaDecl', 'LLAVE_CERRADA', 'PUNTOCOMA']
+        ['LLAVE_ABIERTA', 'ListaDecl', 'LLAVE_CERRADA', 'PUNTOCOMA'],
+        ['LLAVE_ABIERTA', 'LLAVE_CERRADA', 'PUNTOCOMA']
     ],
 
     'OLogico':[
@@ -156,6 +163,7 @@ prods = {
 
 no_Terminales = ['Programa',
                 'ListaDecl',
+                'ListaDecl2', # Agregado por eliminacion de recursividad izq
                 'Declaracion',
                 'FunDecl',
                 'Funcion',
@@ -203,44 +211,46 @@ def parser(cadena):
 
     def parse():
         pni('Programa')
+        if self['index'] == len(self['tokens']):
+            self['index'] -= 1
         token_actual = self['tokens'][self['index']]
-        print('tiene que comparar', token_actual[0], 'EOF',self['error'])
+        #print('tiene que comparar', token_actual[0], 'EOF', self['error'])
         if self['error'] or token_actual[0]!='EOF':
-            print('Cadena no aceptada')
+            #print('Cadena no aceptada')
             return False
         else:
-            print('Cadena aceptada')
+            #print('Cadena aceptada')
             return True
 
     def procesar(parteDerecha):
         for simbolo in parteDerecha:
             token_actual = self['tokens'][self['index']]
-            print("token actual", token_actual)
+            #print("token actual", token_actual)
             self['error'] = False
-            print('en procesar simbolo a evaluar:', simbolo, 'con', token_actual[0])
+            #print('en procesar simbolo a evaluar:', simbolo, 'con', token_actual[0])
             if es_Terminal(simbolo):
-                print('en procesar', simbolo, 'es terminal')
+                #print('en procesar', simbolo, 'es terminal')
                 if simbolo == token_actual[0]: # si simbolo es igual al primer elemento de la tupla token_actual
-                    print(("avanzo con", simbolo, self))
+                    #print(("avanzo con", simbolo, self))
                     self['index'] += 1
-                    print("el indice vale", self['index'])
+                    #print("el indice vale", self['index'])
                 else:
                     self['error'] = True
                     break
 
             elif es_No_Terminal(simbolo):
-                print('en procesar', simbolo, 'es un no terminal')
+                #print('en procesar', simbolo, 'es un no terminal')
                 pni(simbolo)
                 if self['error']:
                     break
 
     def pni(noTerminal):
         for parteDerecha in prods[noTerminal]:
-            print("en pni entra", parteDerecha)
+            #print("en pni entra", parteDerecha)
             index_aux = self['index'] #Pivote de retroceso
             procesar(parteDerecha)
             if self['error'] == True:
-                print('en pni Error entonces hace BackTracking')
+                #print('en pni Error entonces hace BackTracking')
                 self['index'] = index_aux
             
             else:
@@ -251,10 +261,11 @@ def parser(cadena):
 
 
 cases = [
-    #('', True),
+    ('', True),
     #('if(id) id ;', True),
-    #('var id;', True),
-    ('fun id ( id ) { var id ;}', True)
+    ('var id;', True),
+    ('fun id ( ) { var id ;};', True),
+    ('fun;', False),
     #('var id = True ;', True)
 ]
 
@@ -262,5 +273,3 @@ cases = [
 for cadena, resultado in cases:
     assert parser(cadena) == resultado
     print(cadena)
-
-
