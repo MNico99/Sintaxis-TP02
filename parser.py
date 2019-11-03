@@ -51,7 +51,7 @@ prods = {
         ['IfSent'],
         ['ReturnSent'],
         ['WhileSent'],
-        ['Bloque'],
+        ['Bloque', 'PUNTOCOMA'],
     ],
 
     'ExprSent':[
@@ -93,16 +93,11 @@ prods = {
     ],
 
     'WhileSent':[
-        ['"while"', 'PAREN_OPEN', 'Expresion', 'PAREN_CLOSE', 'Sentencia']
+        ['WHILE', 'PAREN_OPEN', 'Expresion', 'PAREN_CLOSE', 'Sentencia']
     ],
 
     'Bloque':[
-        ['LLAVE_ABIERTA', 'ListaSent', 'LLAVE_CERRADA']
-    ],
-
-    'ListaSent':[
-        ['Sentencia', 'ListaSent'],
-        [],
+        ['LLAVE_ABIERTA', 'ListaDecl', 'LLAVE_CERRADA', 'PUNTOCOMA']
     ],
 
     'OLogico':[
@@ -118,7 +113,7 @@ prods = {
     'Igua':[
         ['Comparacion'],
         ['Comparacion', 'DOBLE_IGUAL', 'Igua'],
-        ['Comparacion', 'A_ExclamacionIgual', 'Igua']
+        ['Comparacion', 'EXCLAMACION_IGUAL', 'Igua']
     ],
 
     'Comparacion':[
@@ -179,7 +174,6 @@ no_Terminales = ['Programa',
                 'ReturnSent',
                 'WhileSent',
                 'Bloque',
-                'ListaSent',
                 'OLogico',
                 'YLogico',
                 'Igua',
@@ -198,6 +192,7 @@ def es_Terminal(simbolo):
 def es_No_Terminal(simbolo):
     return simbolo in no_Terminales
 
+
 def parser(cadena):
     
     self = {
@@ -210,7 +205,7 @@ def parser(cadena):
         pni('Programa')
         token_actual = self['tokens'][self['index']]
         print('tiene que comparar', token_actual[0], 'EOF',self['error'])
-        if self['error'] and token_actual[0]!='EOF':
+        if self['error'] or token_actual[0]!='EOF':
             print('Cadena no aceptada')
             return False
         else:
@@ -218,9 +213,6 @@ def parser(cadena):
             return True
 
     def procesar(parteDerecha):
-        if parteDerecha == '':
-            self['index'] += 1
-            return
         for simbolo in parteDerecha:
             token_actual = self['tokens'][self['index']]
             print("token actual", token_actual)
@@ -228,13 +220,14 @@ def parser(cadena):
             print('en procesar simbolo a evaluar:', simbolo, 'con', token_actual[0])
             if es_Terminal(simbolo):
                 print('en procesar', simbolo, 'es terminal')
-                if simbolo == token_actual[self['index']]: # si simbolo es igual al primer elemento de la tupla token_actual
+                if simbolo == token_actual[0]: # si simbolo es igual al primer elemento de la tupla token_actual
                     print(("avanzo con", simbolo, self))
                     self['index'] += 1
                     print("el indice vale", self['index'])
                 else:
                     self['error'] = True
                     break
+
             elif es_No_Terminal(simbolo):
                 print('en procesar', simbolo, 'es un no terminal')
                 pni(simbolo)
@@ -248,7 +241,8 @@ def parser(cadena):
             procesar(parteDerecha)
             if self['error'] == True:
                 print('en pni Error entonces hace BackTracking')
-                self['index'] == index_aux
+                self['index'] = index_aux
+            
             else:
                 break
 
@@ -257,14 +251,16 @@ def parser(cadena):
 
 
 cases = [
-    ('', True),
+    #('', True),
     #('if(id) id ;', True),
-    ('var id;', True),
+    #('var id;', True),
+    ('fun id ( id ) { var id ;}', True)
     #('var id = True ;', True)
 ]
 
 
 for cadena, resultado in cases:
     assert parser(cadena) == resultado
+    print(cadena)
 
 
