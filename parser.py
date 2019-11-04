@@ -265,6 +265,8 @@ cases = [
     #('if(id) id ;', True),
     ('var id;', True),
     ('fun id ( ) { var id ;};', True),
+    ('fun id ( id ) { var id ;};', True),
+    ('fun id ( id ) { var id ;}', False),
     ('fun;', False),
     #('var id = True ;', True)
 ]
@@ -272,4 +274,4 @@ cases = [
 
 for cadena, resultado in cases:
     assert parser(cadena) == resultado
-    print(cadena)
+    print('tests:',cadena, resultado)
