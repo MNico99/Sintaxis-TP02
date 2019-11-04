@@ -210,16 +210,17 @@ def parser(cadena):
         }
 
     def parse():
+        print(cadena)
         pni('Programa')
         if self['index'] == len(self['tokens']):
             self['index'] -= 1
         token_actual = self['tokens'][self['index']]
         #print('tiene que comparar', token_actual[0], 'EOF', self['error'])
         if self['error'] or token_actual[0]!='EOF':
-            #print('Cadena no aceptada')
+            print('Cadena no aceptada')
             return False
         else:
-            #print('Cadena aceptada')
+            print('Cadena aceptada')
             return True
 
     def procesar(parteDerecha):
@@ -261,14 +262,16 @@ def parser(cadena):
 
 
 cases = [
-    ('', True),
-    #('if(id) id ;', True),
-    ('var id;', True),
-    ('fun id ( ) { var id ;};', True),
-    ('fun id ( id ) { var id ;};', True),
-    ('fun id ( id ) { var id ;}', False),
-    ('fun;', False),
-    #('var id = True ;', True)
+    ('', True), #1
+    ('if(id) id ;', False), #2
+    ('var id;', True), #3
+    ('fun id ( ) { var id ;};', True), #4
+    ('fun id ( id ) { var id ;};', True), #5
+    ('fun id ( id ) { var id ;}', False), #6
+    ('fun;', False), #7
+    ('var id = True ;', False), #8
+    ('while ( id = True ) { } ; ;', True), #9
+    ('for ( var id ; ; ) id = False ;', True) #10
 ]
 
 
